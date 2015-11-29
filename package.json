@@ -15,5 +15,15 @@
   "bugs": {
     "url": "https://github.com/hungchai/node-stock-backtest/issues"
   },
-  "homepage": "https://github.com/hungchai/node-stock-backtest#readme"
+  "homepage": "https://github.com/hungchai/node-stock-backtest#readme",
+  "dependencies": {
+    "co": "^4.6.0",
+    "co-parallel": "^1.0.0",
+    "json2xls": "0.0.*",
+    "mongodb": "2.0.*",
+    "mongoose": "^4.2.8",
+    "talib": "*",
+    "thunkify": "^2.1.2",
+    "underscore": "*"
+  }
 }
