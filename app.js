@@ -21,7 +21,7 @@ var StockProfileModel = mongoose.model("StockProfile");
 var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
 try {
-    global.mongoURI = global.config.mongoDbConnlocal;
+    global.mongoURI = global.config.mongoDbConn;
 }
 catch (err) {
     global.mongoURI = global.config.mongoDbConn;
