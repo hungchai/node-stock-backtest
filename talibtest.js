@@ -34,4 +34,23 @@ mongoose.connection.on("open", function (err) {
     else
         console.log("connected");
         
+    console.log(util.inspect(talib.explain("ADX"), { depth:3 }));  
+    var marketContents = fs.readFileSync('./examples/marketdata.json','utf8'); 
+    var marketData = JSON.parse(marketContents);
+
+    talib.execute({
+    name: "ADX",
+    startIdx: 0,
+    endIdx: marketData.close.length - 1,
+    high: marketData.high,
+    low: marketData.low,
+    close: marketData.close,
+    optInTimePeriod: 9
+}, function (result) {
+
+    // Show the result array
+    console.log("ADX Function Results:");
+    console.log(result);
+
+});
 });
