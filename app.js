@@ -1,3 +1,4 @@
+'use strict'
 global.talib = require('talib');
 global.config = require('./config/config.json');
 global.mongoose = require('mongoose');
@@ -29,11 +30,22 @@ var StockProfileModel = mongoose.model("StockProfile");
 var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
 mongoose.connection.on("open", function (err) {
-    StockQuotesArrayModel.findBySymbol('00003:HK', function (err, stockQuotesArray) {
-            util.log(stockQuotesArray);
-        });
-    // StockQuotesArrayModel.find({'_id':'00003:HK'}).exec(function (err, stockQuotesArray)
-    // {
-    //      console.log(stockQuotesArray);
-    // });
+    co(function*() {
+    let symbol = '00003:HK';
+    let share = 1000;
+    
+    let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol('00003:HK');
+        
+    util.print(stockQuotesArray); 
+    
+    })
+    .then
+    (function (val) {
+
+    })
+    .catch(function (err, result) {
+        console.log('err: ' + err + ', result: ' + result);
+        process.exit(0);
+
+    });
 });

@@ -14,8 +14,10 @@ module.exports = function () {
     });
     stockQuotesArraySchema.index({ _id: 1}); // schema level, ensure index
     
-    stockQuotesArraySchema.statics.findBySymbol = function(symbol, cb){
-        return this.model('StockQuotesArray').find({"_id":symbol},cb);
+    stockQuotesArraySchema.statics.findBySymbol = function(symbol){
+        return function(callback){
+            mongoose.model('StockQuotesArray').find({"_id":symbol}).exec(callback);
+        }
     }
     mongoose.model('StockQuotesArray', stockQuotesArraySchema, 'stockQuotesArray');
 };

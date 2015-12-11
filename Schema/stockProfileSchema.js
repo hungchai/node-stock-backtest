@@ -9,5 +9,6 @@ module.exports = function () {
         "engName": String,
         "lastupdate" : Date
     });
+    stockProfileSchema.index({symbol:1});
     mongoose.model('StockProfile', stockProfileSchema, 'stockProfile');
 };
