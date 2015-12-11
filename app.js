@@ -11,6 +11,12 @@ global. _ = require("underscore");
 global.json2xls = require('json2xls');
 global.fs = require('fs');
 
+var talibExecute = thunkify((parameter, callback) => {
+    talib.execute(parameter, function (result) {
+        callback(null, result.result);
+    })
+});
+
 try {
     global.mongoURI = global.config.mongoDbConn;
 }
@@ -34,9 +40,21 @@ mongoose.connection.on("open", function (err) {
     let symbol = '00003:HK';
     let share = 1000;
     
-    let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol('00003:HK');
-        
-    util.print(stockQuotesArray); 
+    let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol)[0];
+    
+    console.log(stockQuotesArray);          
+    var resultWILLR = yield talibExecute({
+                name: "WILLR",
+                startIdx: 0,
+                endIdx: stockQuotesArray.closes.length - 1,
+                high: stockQuotesArray.highs,
+                low: stockQuotesArray.lows,
+                close: stockQuotesArray.closes,
+                open: stockQuotesArray.opens,
+                inReal: stockQuotesArray.closes,
+                optInTimePeriod: 9
+            });
+      console.log(resultWILLR);          
     
     })
     .then
