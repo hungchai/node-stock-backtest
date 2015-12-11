@@ -41,7 +41,9 @@ mongoose.connection.on("open", function (err) {
     let share = 1000;
     
     let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
-    
+
+    let closes = stockQuotesArray.closes;
+
     console.log(stockQuotesArray);          
     var resultWILLR = yield talibExecute({
                 name: "WILLR",
