@@ -16,7 +16,13 @@ module.exports = function () {
     
     stockQuotesArraySchema.statics.findBySymbol = function(symbol){
         return function(callback){
-            mongoose.model('StockQuotesArray').find({"_id":symbol}).exec(callback);
+            mongoose.model('StockQuotesArray').findOne({"_id":symbol}).exec(callback);
+        }
+    };
+    
+    stockQuotesArraySchema.statics.findAll = function(){
+        return function(callback){
+            mongoose.model('StockQuotesArray').find({}).exec(callback);
         }
     }
     mongoose.model('StockQuotesArray', stockQuotesArraySchema, 'stockQuotesArray');

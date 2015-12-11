@@ -40,7 +40,7 @@ mongoose.connection.on("open", function (err) {
     let symbol = '00003:HK';
     let share = 1000;
     
-    let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol)[0];
+    let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
     
     console.log(stockQuotesArray);          
     var resultWILLR = yield talibExecute({
