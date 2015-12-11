@@ -29,9 +29,11 @@ var StockProfileModel = mongoose.model("StockProfile");
 var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
 mongoose.connection.on("open", function (err) {
-    if (err != undefined)
-        console.log(err.message);
-    else
-        console.log("connected");
-        
+    StockQuotesArrayModel.findBySymbol('00003:HK', function (err, stockQuotesArray) {
+            util.log(stockQuotesArray);
+        });
+    // StockQuotesArrayModel.find({'_id':'00003:HK'}).exec(function (err, stockQuotesArray)
+    // {
+    //      console.log(stockQuotesArray);
+    // });
 });

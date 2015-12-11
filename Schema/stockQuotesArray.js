@@ -12,6 +12,10 @@ module.exports = function () {
         turnovers: [Number],
         dates: [Date]
     });
-
+    stockQuotesArraySchema.index({ _id: 1}); // schema level, ensure index
+    
+    stockQuotesArraySchema.statics.findBySymbol = function(symbol, cb){
+        return this.model('StockQuotesArray').find({"_id":symbol},cb);
+    }
     mongoose.model('StockQuotesArray', stockQuotesArraySchema, 'stockQuotesArray');
 };
