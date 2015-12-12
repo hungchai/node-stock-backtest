@@ -7,7 +7,7 @@ global.co = require('co');
 global.parallel = require('co-parallel');
 global.thunkify = require('thunkify');
 global.util = require('util');
-global. _ = require("underscore");
+global._ = require("underscore");
 global.json2xls = require('json2xls');
 global.fs = require('fs');
 
@@ -37,35 +37,43 @@ var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
 mongoose.connection.on("open", function (err) {
     co(function*() {
-    let symbol = '00003:HK';
-    let share = 1000;
-    
-    let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
+        let symbol = '00003:HK';
+        let share = 1000;
 
-    let closes = stockQuotesArray.closes;
+        let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
+        //Reserved variable names
+        let closes = stockQuotesArray.closes;
+        let highs = stockQuotesArray.highs;
+        let lows = stockQuotesArray.lows;
+        let opens = stockQuotesArray.opens;
+        let volumes = stockQuotesArray.volumes;
+        let turnovers = stockQuotesArray.turnovers;
+        let dates = stockQuotesArray.dates;
 
-    console.log(stockQuotesArray);          
-    var resultWILLR = yield talibExecute({
-                name: "WILLR",
-                startIdx: 0,
-                endIdx: stockQuotesArray.closes.length - 1,
-                high: stockQuotesArray.highs,
-                low: stockQuotesArray.lows,
-                close: stockQuotesArray.closes,
-                open: stockQuotesArray.opens,
-                inReal: stockQuotesArray.closes,
-                optInTimePeriod: 9
-            });
-      console.log(resultWILLR);          
-    
+        let positionsize = 1;
+
+        console.log(stockQuotesArray);
+        var resultWILLR = yield talibExecute({
+            name: "WILLR",
+            startIdx: 0,
+            endIdx: stockQuotesArray.closes.length - 1,
+            high: stockQuotesArray.highs,
+            low: stockQuotesArray.lows,
+            close: stockQuotesArray.closes,
+            open: stockQuotesArray.opens,
+            inReal: stockQuotesArray.closes,
+            optInTimePeriod: 9
+        });
+        console.log(resultWILLR);
+
     })
-    .then
+        .then
     (function (val) {
 
     })
-    .catch(function (err, result) {
-        console.log('err: ' + err + ', result: ' + result);
-        process.exit(0);
+        .catch(function (err, result) {
+            console.log('err: ' + err + ', result: ' + result);
+            process.exit(0);
 
-    });
+        });
 });
