@@ -49,7 +49,6 @@ mongoose.connection.on("open", function (err) {
         let volumes = stockQuotesArray.volumes;
         let turnovers = stockQuotesArray.turnovers;
         let dates = stockQuotesArray.dates;
-
         let positionsize = 1;
 
         console.log(stockQuotesArray);
