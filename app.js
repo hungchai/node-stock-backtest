@@ -12,8 +12,10 @@ global.json2xls = require('json2xls');
 global.fs = require('fs');
 
 var talibExecute = thunkify((parameter, callback) => {
-    talib.execute(parameter, function (result) {
-        callback(null, result.result);
+    talib.execute(parameter, function(result) {
+        //[ 'begIndex', 'nbElement', 'result' ]  
+        console.log(Object.keys(result));
+        callback(null, result);
     })
 });
 
@@ -26,51 +28,86 @@ catch (err) {
 
 mongoose.connect(global.mongoURI);
 console.log("TALib Version: " + talib.version);
-require('./Schema/stockDayQuoteSchema.js')();
-require('./Schema/stockProfileSchema.js')();
-require('./Schema/stockQuotesArray.js')();
+require('./Schema/stockDayQuoteSchema')();
+require('./Schema/stockProfileSchema')();
+require('./Schema/stockQuotesArray')();
 
 
 var StockDayQuoteModel = mongoose.model("StockDayQuote");
 var StockProfileModel = mongoose.model("StockProfile");
 var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
-mongoose.connection.on("open", function (err) {
-    co(function*() {
-        let symbol = '00003:HK';
-        let share = 1000;
+mongoose.connection.on("open", function(err) {
+    co(function*(symbol, share) {
+            symbol = '00003:HK';
+            share = 1000;
 
-        let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
-        //Reserved variable names
-        let closes = stockQuotesArray.closes;
-        let highs = stockQuotesArray.highs;
-        let lows = stockQuotesArray.lows;
-        let opens = stockQuotesArray.opens;
-        let volumes = stockQuotesArray.volumes;
-        let turnovers = stockQuotesArray.turnovers;
-        let dates = stockQuotesArray.dates;
-        let positionsize = 1;
+            let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
+            //Reserved variable names
+            let closes = stockQuotesArray.closes;
+            let highs = stockQuotesArray.highs;
+            let lows = stockQuotesArray.lows;
+            let opens = stockQuotesArray.opens;
+            let volumes = stockQuotesArray.volumes;
+            let turnovers = stockQuotesArray.turnovers;
+            let dates = stockQuotesArray.dates;
+            let positionsize = 1;
+            let quotelength = closes.length;
 
-        console.log(stockQuotesArray);
-        var resultWILLR = yield talibExecute({
-            name: "WILLR",
-            startIdx: 0,
-            endIdx: stockQuotesArray.closes.length - 1,
-            high: stockQuotesArray.highs,
-            low: stockQuotesArray.lows,
-            close: stockQuotesArray.closes,
-            open: stockQuotesArray.opens,
-            inReal: stockQuotesArray.closes,
-            optInTimePeriod: 9
-        });
-        console.log(resultWILLR);
+            let buyrules = {};
+            let sellrules = {};
 
-    })
-        .then
-    (function (val) {
+            console.log(quotelength);
+            //start
+            var idx = 0;
+            for (idx; idx < quotelength - 1; idx++) {
 
-    })
-        .catch(function (err, result) {
+
+            }
+            //end
+
+
+            var WILLR_9 = yield talibExecute({
+                name: "WILLR",
+                startIdx: 0,
+                endIdx: quotelength,
+                high: highs,
+                low: lows,
+                close: closes,
+                open: opens,
+                inReal: closes,
+                optInTimePeriod: 9
+            });
+            console.log(WILLR_9.result["outReal"].length);
+
+            var RSI_9 = yield talibExecute({
+                name: "RSI",
+                startIdx: 1,
+                endIdx: quotelength - 1,
+                high: highs,
+                low: lows,
+                close: closes,
+                open: opens,
+                inReal: closes,
+                optInTimePeriod: 9
+            });
+            console.log(RSI_9.result["outReal"].length);
+
+            var MACD_3_50_10 = yield talibExecute({
+                name: "MACD",
+                startIdx: 0,
+                endIdx: quotelength - 1,
+                inReal: closes,
+                optInFastPeriod: 3,
+                optInSlowPeriod: 50,
+                optInSignalPeriod: 10
+            });
+            console.log(MACD_3_50_10.result["outMACDHist"].length);
+        })
+        .then(function(val) {
+            process.exit(0);
+        })
+        .catch(function(err, result) {
             console.log('err: ' + err + ', result: ' + result);
             process.exit(0);
 
