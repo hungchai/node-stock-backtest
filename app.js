@@ -14,8 +14,27 @@ global.fs = require('fs');
 var talibExecute = thunkify((parameter, callback) => {
     talib.execute(parameter, function(result) {
         //[ 'begIndex', 'nbElement', 'result' ]  
-        console.log(Object.keys(result));
-        callback(null, result);
+        //console.log(Object.keys(result));
+        var begIndex = result.begIndex;
+        var nbElement = result.nbElement;
+        console.log('begIndex:'+begIndex);
+        console.log('nbElement'+nbElement);
+        var talibResult = {};
+        for(var k in result.result)
+        {
+            var out=result.result[k];
+             talibResult[k] = [];
+            for(var i = 0 , len = begIndex+nbElement; i < len; i++)
+            {
+                if (i < begIndex)
+                {
+                    talibResult[k][i] = null;
+                }else{
+                     talibResult[k][i] = out[i-begIndex];
+                }
+            }
+        }
+        callback(null, talibResult);
     })
 });
 
@@ -78,7 +97,7 @@ mongoose.connection.on("open", function(err) {
                 inReal: closes,
                 optInTimePeriod: 9
             });
-            console.log(WILLR_9.result["outReal"].length);
+            console.log(WILLR_9["outReal"].length);
 
             var RSI_9 = yield talibExecute({
                 name: "RSI",
@@ -91,7 +110,7 @@ mongoose.connection.on("open", function(err) {
                 inReal: closes,
                 optInTimePeriod: 9
             });
-            console.log(RSI_9.result["outReal"].length);
+            console.log(RSI_9["outReal"].length);
 
             var MACD_3_50_10 = yield talibExecute({
                 name: "MACD",
@@ -102,7 +121,7 @@ mongoose.connection.on("open", function(err) {
                 optInSlowPeriod: 50,
                 optInSignalPeriod: 10
             });
-            console.log(MACD_3_50_10.result["outMACDHist"].length);
+            console.log(MACD_3_50_10["outMACDHist"].length);
         })
         .then(function(val) {
             process.exit(0);
