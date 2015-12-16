@@ -1,5 +1,6 @@
 'use strict'
-global.talib = require('talib');
+//global.talib = require('talib');
+global.talib = require('./co-talib');
 global.config = require('./config/config.json');
 global.mongoose = require('mongoose');
 global.MongoClient = require('mongodb').MongoClient;
@@ -10,33 +11,6 @@ global.util = require('util');
 global._ = require("underscore");
 global.json2xls = require('json2xls');
 global.fs = require('fs');
-
-var talibExecute = thunkify((parameter, callback) => {
-    talib.execute(parameter, function(result) {
-        //[ 'begIndex', 'nbElement', 'result' ]  
-        //console.log(Object.keys(result));
-        var begIndex = result.begIndex;
-        var nbElement = result.nbElement;
-        console.log('begIndex:'+begIndex);
-        console.log('nbElement'+nbElement);
-        var talibResult = {};
-        for(var k in result.result)
-        {
-            var out=result.result[k];
-             talibResult[k] = [];
-            for(var i = 0 , len = begIndex+nbElement; i < len; i++)
-            {
-                if (i < begIndex)
-                {
-                    talibResult[k][i] = null;
-                }else{
-                     talibResult[k][i] = out[i-begIndex];
-                }
-            }
-        }
-        callback(null, talibResult);
-    })
-});
 
 try {
     global.mongoURI = global.config.mongoDbConn;
@@ -86,7 +60,7 @@ mongoose.connection.on("open", function(err) {
             //end
 
 
-            var WILLR_9 = yield talibExecute({
+            var WILLR_9 = yield talib.exec({
                 name: "WILLR",
                 startIdx: 0,
                 endIdx: quotelength,
@@ -99,9 +73,9 @@ mongoose.connection.on("open", function(err) {
             });
             console.log(WILLR_9["outReal"].length);
 
-            var RSI_9 = yield talibExecute({
+            var RSI_9 = yield talib.exec({
                 name: "RSI",
-                startIdx: 1,
+                startIdx: 0,
                 endIdx: quotelength - 1,
                 high: highs,
                 low: lows,
@@ -112,7 +86,7 @@ mongoose.connection.on("open", function(err) {
             });
             console.log(RSI_9["outReal"].length);
 
-            var MACD_3_50_10 = yield talibExecute({
+            var MACD_3_50_10 = yield talib.exec({
                 name: "MACD",
                 startIdx: 0,
                 endIdx: quotelength - 1,
