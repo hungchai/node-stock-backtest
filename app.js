@@ -32,7 +32,7 @@ var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
 mongoose.connection.on("open", function(err) {
     co(function*(symbol, share) {
-            symbol = '00003:HK';
+            symbol = '00700:HK';
             share = 1000;
 
             
@@ -55,7 +55,7 @@ mongoose.connection.on("open", function(err) {
             let sellrules = {};
             let backtestResult = [];
             
-            console.log(quotelength);
+
             //start
             
             var WILLR_9 = yield talib.exec({
@@ -95,10 +95,23 @@ mongoose.connection.on("open", function(err) {
             });
             console.log(MACD_3_50_10["outMACDHist"].length);
             
-            buyrules["buy_1"] = function(idx) {
+
+            //buyrules["buy_1_RSI"] = function(idx) {
+            //    if (RSI_9["outReal"][idx] != null)
+            //    {
+            //        if (RSI_9["outReal"][idx] < 25)
+            //            return true;
+            //        else
+            //            return false;
+            //    }else
+            //    {
+            //        return false;
+            //    }
+            //};
+            buyrules["buy_2_WILLR"] = function(idx) {
                 if (WILLR_9["outReal"][idx] != null)
                 {
-                    if (WILLR_9["outReal"][idx] < -70)
+                    if (WILLR_9["outReal"][idx] < -80)
                         return true;
                     else
                         return false;
@@ -107,10 +120,10 @@ mongoose.connection.on("open", function(err) {
                     return false;
                 }
             };
-            buyrules["buy_2"] = function(idx) {
-                if (WILLR_9["outReal"][idx] != null)
+            buyrules["buy_3_MACD"] = function(idx) {
+                if (MACD_3_50_10["outMACDHist"][idx] != null)
                 {
-                    if (RSI_9["outReal"][idx] < 30)
+                    if (MACD_3_50_10["outMACDHist"][idx] >=0 && MACD_3_50_10["outMACDHist"][idx-1] < 0 )
                         return true;
                     else
                         return false;
@@ -118,17 +131,15 @@ mongoose.connection.on("open", function(err) {
                 {
                     return false;
                 }
-            }
+            };
             sellrules["sell_1"] = function(idx)
             {
 
-                    if ((closes[idx] - holdprice)/holdprice>=0.04)
+                    if ((closes[idx] - holdprice)/holdprice>=0.03)
                     {
-                        holdprice = -1;
                         return true;
                     }else if ((closes[idx] - holdprice)/holdprice<=(-0.04))
                     {
-                        holdprice = -1;
                         return true;
                     }
                     else{
@@ -147,6 +158,7 @@ mongoose.connection.on("open", function(err) {
                 dayResult.volume = volumes[idx];
                 dayResult.turnover = turnovers[idx];
                 dayResult.holdprice = holdprice;
+                dayResult.profit = 0;
                 for(var buyruleName in buyrules)
                 {
                   dayResult[buyruleName] = false;
@@ -155,7 +167,7 @@ mongoose.connection.on("open", function(err) {
                 {
                   dayResult[sellruleName] = false;
                 }
-                dayResult.profit = 0;
+
                 for(var buyruleName in buyrules)
                 {
                     if (holdprice<0 && buyrules[buyruleName](idx))
@@ -167,7 +179,7 @@ mongoose.connection.on("open", function(err) {
                     {
                         dayResult[buyruleName] = true;
                     }
-                } 
+                };
                 for(var sellruleName in sellrules)
                 {
                     if (holdprice>0 && sellrules[sellruleName](idx))
@@ -177,13 +189,7 @@ mongoose.connection.on("open", function(err) {
                         holdprice = -1;
                         break;
                     }
-                }
-                
-                // if (buyrules["buy1"]())
-                // {
-                    
-                    
-                // }
+                };
                 
                 backtestResult.push(dayResult);
                 dayResult = null;
