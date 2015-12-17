@@ -19,7 +19,10 @@
   "dependencies": {
     "co": "^4.6.0",
     "co-parallel": "^1.0.0",
+    "co-talib": "file:co-talib",
     "json2xls": "0.0.*",
+    "moment": "^2.10.6",
+    "moment-timezone": "^0.4.1",
     "mongodb": "2.0.*",
     "mongoose": "^4.2.8",
     "talib": "*",
