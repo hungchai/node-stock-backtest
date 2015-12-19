@@ -1,5 +1,5 @@
 'use strict'
-//global.talib = require('talib');
+
 global.talib = require('co-talib');
 global.config = require('./config/config.json');
 global.mongoose = require('mongoose');
@@ -25,17 +25,13 @@ console.log("TALib Version: " + talib.version);
 
 var mongoSchema = require('./Schema');
 
-
-var StockDayQuoteModel = mongoose.model("StockDayQuote");
-var StockProfileModel = mongoose.model("StockProfile");
 var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
 mongoose.connection.on("open", function(err) {
     co(function*(symbol, share) {
-            symbol = '00700:HK';
+            symbol = '00001:HK';
             share = 1000;
 
-            
             let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
             //Reserved variable names
             let closes = stockQuotesArray.closes;
@@ -45,18 +41,27 @@ mongoose.connection.on("open", function(err) {
             let volumes = stockQuotesArray.volumes;
             let turnovers = stockQuotesArray.turnovers;
             let dates = stockQuotesArray.dates;
-            
             let holdprice = -1;
-            let positionsize = 1;
             
             let quotelength = closes.length;
-
+            
             let buyrules = {};
             let sellrules = {};
             let backtestResult = [];
             
 
             //start
+            var ROCP = yield talib.exec({
+                name: "ROCP",
+                startIdx: 0,
+                endIdx: quotelength-1,
+                high: highs,
+                low: lows,
+                close: closes,
+                open: opens,
+                inReal: closes,
+            });
+            console.log(ROCP["outReal"].length);
             
             var WILLR_9 = yield talib.exec({
                 name: "WILLR",
@@ -96,22 +101,10 @@ mongoose.connection.on("open", function(err) {
             console.log(MACD_3_50_10["outMACDHist"].length);
             
 
-            //buyrules["buy_1_RSI"] = function(idx) {
-            //    if (RSI_9["outReal"][idx] != null)
-            //    {
-            //        if (RSI_9["outReal"][idx] < 25)
-            //            return true;
-            //        else
-            //            return false;
-            //    }else
-            //    {
-            //        return false;
-            //    }
-            //};
-            buyrules["buy_2_WILLR"] = function(idx) {
-                if (WILLR_9["outReal"][idx] != null)
+            buyrules["buy_ROCP<2"] = function(idx) {
+                if (ROCP["outReal"][idx] != null)
                 {
-                    if (WILLR_9["outReal"][idx] < -80)
+                    if (ROCP["outReal"][idx] <= -0.02 )
                         return true;
                     else
                         return false;
@@ -120,25 +113,37 @@ mongoose.connection.on("open", function(err) {
                     return false;
                 }
             };
-            buyrules["buy_3_MACD"] = function(idx) {
-                if (MACD_3_50_10["outMACDHist"][idx] != null)
-                {
-                    if (MACD_3_50_10["outMACDHist"][idx] >=0 && MACD_3_50_10["outMACDHist"][idx-1] < 0 )
-                        return true;
-                    else
-                        return false;
-                }else
-                {
-                    return false;
-                }
-            };
-            sellrules["sell_1"] = function(idx)
+            // buyrules["buy_1_WILLR"] = function(idx) {
+            //     if (WILLR_9["outReal"][idx] != null)
+            //     {
+            //         if (WILLR_9["outReal"][idx] < -80)
+            //             return true;
+            //         else
+            //             return false;
+            //     }else
+            //     {
+            //         return false;
+            //     }
+            // };
+            // buyrules["buy_3_MACD"] = function(idx) {
+            //     if (MACD_3_50_10["outMACDHist"][idx] != null)
+            //     {
+            //         if (MACD_3_50_10["outMACDHist"][idx] >=0 && MACD_3_50_10["outMACDHist"][idx-1] < 0 && MACD_3_50_10["outMACD"][idx] < 0 )
+            //             return true;
+            //         else
+            //             return false;
+            //     }else
+            //     {
+            //         return false;
+            //     }
+            // };
+            sellrules["sell_2percent"] = function(idx)
             {
 
-                    if ((closes[idx] - holdprice)/holdprice>=0.03)
+                    if ((closes[idx] - holdprice)/holdprice>=0.02)
                     {
                         return true;
-                    }else if ((closes[idx] - holdprice)/holdprice<=(-0.04))
+                    }else if ((closes[idx] - holdprice)/holdprice<=(-0.1))
                     {
                         return true;
                     }
