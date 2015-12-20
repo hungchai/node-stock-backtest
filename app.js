@@ -28,7 +28,7 @@ var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
 mongoose.connection.on("open", function(err) {
     co(function*(symbol, share) {
-            symbol = '00001:HK';
+            symbol = '00700:HK';
             share = 1000;
 
             let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
@@ -59,6 +59,7 @@ mongoose.connection.on("open", function(err) {
                 close: closes,
                 open: opens,
                 inReal: closes,
+                optInTimePeriod:3
             });
             console.log(ROCP["outReal"].length);
             
@@ -100,18 +101,18 @@ mongoose.connection.on("open", function(err) {
             console.log(MACD_3_50_10["outMACDHist"].length);
             
 
-            buyrules["buy_ROCP<2"] = function(idx) {
-                if (ROCP["outReal"][idx] != null)
-                {
-                    if (ROCP["outReal"][idx] <= -0.02 )
-                        return true;
-                    else
-                        return false;
-                }else
-                {
-                    return false;
-                }
-            };
+            //buyrules["buy_ROCP<3"] = function(idx) {
+            //    if (ROCP["outReal"][idx] != null)
+            //    {
+            //        if (ROCP["outReal"][idx] <= -0.03 )
+            //            return true;
+            //        else
+            //            return false;
+            //    }else
+            //    {
+            //        return false;
+            //    }
+            //};
             // buyrules["buy_1_WILLR"] = function(idx) {
             //     if (WILLR_9["outReal"][idx] != null)
             //     {
@@ -124,25 +125,38 @@ mongoose.connection.on("open", function(err) {
             //         return false;
             //     }
             // };
-            // buyrules["buy_3_MACD"] = function(idx) {
-            //     if (MACD_3_50_10["outMACDHist"][idx] != null)
-            //     {
-            //         if (MACD_3_50_10["outMACDHist"][idx] >=0 && MACD_3_50_10["outMACDHist"][idx-1] < 0 && MACD_3_50_10["outMACD"][idx] < 0 )
-            //             return true;
-            //         else
-            //             return false;
-            //     }else
-            //     {
-            //         return false;
-            //     }
-            // };
+             buyrules["buy_3_MACD_outMACDSignal_UPING"] = function(idx) {
+                 if (MACD_3_50_10["outMACDHist"][idx] != null && MACD_3_50_10["outMACDHist"][idx-5] != null )
+                 {
+                     if (MACD_3_50_10["outMACDHist"][idx] >=0 && MACD_3_50_10["outMACDHist"][idx-1] < 0 &&  MACD_3_50_10["outMACDSignal"][idx] < 0 && MACD_3_50_10["outMACDSignal"][idx-5] < MACD_3_50_10["outMACDSignal"][idx] )
+                         return true;
+                     else
+                         return false;
+                 }else
+                 {
+                     return false;
+                 }
+             };
+            sellrules["sell_macd"] = function(idx)
+            {
+                if (MACD_3_50_10["outMACDHist"][idx] != null)
+                {
+                    if (MACD_3_50_10["outMACDHist"][idx] <0 && MACD_3_50_10["outMACDHist"][idx-1] >= 0 )
+                        return true;
+                    else
+                        return false;
+                }else
+                {
+                    return false;
+                }
+            }
             sellrules["sell_2percent"] = function(idx)
             {
 
-                    if ((closes[idx] - holdprice)/holdprice>=0.02)
+                    if ((closes[idx] - holdprice)/holdprice>=0.04)
                     {
                         return true;
-                    }else if ((closes[idx] - holdprice)/holdprice<=(-0.1))
+                    }else if ((closes[idx] - holdprice)/holdprice<=(-0.04))
                     {
                         return true;
                     }
