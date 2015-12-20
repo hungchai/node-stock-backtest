@@ -24,7 +24,6 @@ mongoose.connect(global.mongoURI);
 console.log("TALib Version: " + talib.version);
 
 var mongoSchema = require('./Schema');
-
 var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
 mongoose.connection.on("open", function(err) {
