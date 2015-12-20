@@ -60,6 +60,7 @@ mongoose.connection.on("open", function(err) {
                 close: closes,
                 open: opens,
                 inReal: closes,
+                optInTimePeriod:3
             });
             console.log(ROCP["outReal"].length);
             
