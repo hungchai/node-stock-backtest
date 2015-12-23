@@ -34,7 +34,7 @@ class BacktestRunner {
             co(function*() {
                 //importance
                    //eval(customRulesScript);
-                   var myFunction = new Function("closes","highs","lows","opens","volumes","turnovers","dates","quotelength","buyrules","sellrules",customRulesScript);
+                   var myFunction = new Function("closes","highs","lows","opens","volumes","turnovers","dates","quotelength","buyrules","sellrules",'return function(callback) {co(function*() {'+customRulesScript+' return "1"}).then(function(val) {callback(null, val)}).catch(function(err, result) {console.log("err: " + err + ", result: " + result);callback(err, result);});}');
                     //importance
 
                    var customRulesScriptReady = yield myFunction(closes,highs,lows,opens,volumes,turnovers,dates,quotelength,buyrules,sellrules);

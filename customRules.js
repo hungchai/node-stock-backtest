@@ -1,5 +1,4 @@
-return function(callback) {
-        co(function*() {
+
                 var ROCP = yield talib.exec({
                     name: "ROCP",
                     startIdx: 0,
@@ -73,13 +72,3 @@ return function(callback) {
                         return false;
                     }
                 };
-                return "1"
-            })
-            .then(function(val) {
-                callback(null, val)
-            })
-            .catch(function(err, result) {
-                console.log("err: " + err + ", result: " + result);
-                callback(err, result);
-            });
-};
