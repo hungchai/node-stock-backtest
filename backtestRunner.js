@@ -14,24 +14,31 @@ class BacktestRunner {
 
 
     run() {
+        //Reserved variable names
+        var closes = this.stockQuotesArray.closes;
+        var highs = this.stockQuotesArray.highs;
+        var lows = this.stockQuotesArray.lows;
+        var opens = this.stockQuotesArray.opens;
+        var volumes = this.stockQuotesArray.volumes;
+        var turnovers = this.stockQuotesArray.turnovers;
+        var dates = this.stockQuotesArray.dates;
+        var holdprice = -1;
+        var quotelength = closes.length;
+        var buyrules = [];
+        var sellrules = [];
+
+        let backtestResult = [];
+
+        let customRulesScript =   this.customRulesScript;
         return function(callback) {
             co(function*() {
-                    eval(this.customRulesScript);
-                    //Reserved variable names
-                    let closes = this.stockQuotesArray.closes;
-                    let highs = this.stockQuotesArray.highs;
-                    let lows = this.stockQuotesArray.lows;
-                    let opens = this.stockQuotesArray.opens;
-                    let volumes = this.stockQuotesArray.volumes;
-                    let turnovers = this.stockQuotesArray.turnovers;
-                    let dates = this.stockQuotesArray.dates;
-                    let holdprice = -1;
-                    let quotelength = closes.length;
+                //importance
+                   //eval(customRulesScript);
+                   var myFunction = new Function("closes","highs","lows","opens","volumes","turnovers","dates","quotelength","buyrules","sellrules",customRulesScript);
+                    //importance
 
-                    let buyrules = this.buyruleParams;
-                    let sellrules = this.sellruleParams;
-                    let backtestResult = [];
-
+                   var customRulesScriptReady = yield myFunction(closes,highs,lows,opens,volumes,turnovers,dates,quotelength,buyrules,sellrules);
+                    
                     var idx = 0;
                     for (idx; idx < quotelength - 1; idx++) {
                         var dayResult = {};
