@@ -10,6 +10,7 @@ class BacktestRunner {
     constructor(stockQuotesArray, customRulesScript) {
         this.stockQuotesArray = stockQuotesArray;
         this.customRulesScript = customRulesScript;
+        console.log("TALib Version: " + talib.version);
     }
 
 
@@ -29,71 +30,77 @@ class BacktestRunner {
 
         let backtestResult = [];
 
-        let customRulesScript =   this.customRulesScript;
-        return function(callback) {
+        let customRulesScript = this.customRulesScript;
+        return function (callback) {
             co(function*() {
                 //importance
-                   //eval(customRulesScript);
-                   var myFunction = new Function("closes","highs","lows","opens","volumes","turnovers","dates","quotelength","buyrules","sellrules",'return function(callback) {co(function*() {'+customRulesScript+' return "1"}).then(function(val) {callback(null, val)}).catch(function(err, result) {console.log("err: " + err + ", result: " + result);callback(err, result);});}');
-                    //importance
+                //eval(customRulesScript);
+                var myFunction = new Function("talib", "co", "closes", "highs", "lows", "opens", "volumes", "turnovers", "dates", "quotelength", "buyrules", "sellrules", 'return function(callback) {co(function*() {'
+                    + customRulesScript + ' return "1"})'
+                    + '.then(function(val) {callback(null, val)})'
+                    + '.catch(function(err, result) {console.log("err: " + err + ", result: " + result);callback(err, result);});}');
+                //importance
 
-                   var customRulesScriptReady = yield myFunction(closes,highs,lows,opens,volumes,turnovers,dates,quotelength,buyrules,sellrules);
-                    
-                    var idx = 0;
-                    for (idx; idx < quotelength - 1; idx++) {
-                        var dayResult = {};
-                        dayResult.date = moment(dates[idx].toISOString()).tz("Asia/Hong_Kong").format();
-                        dayResult.close = closes[idx];
-                        dayResult.high = highs[idx];
-                        dayResult.low = lows[idx];
-                        dayResult.open = opens[idx];
-                        dayResult.volume = volumes[idx];
-                        dayResult.turnover = turnovers[idx];
-                        dayResult.holdprice = holdprice;
-                        dayResult.profit = 0;
-                        for (var buyruleName in buyrules) {
-                            dayResult[buyruleName] = false;
-                        }
-                        for (var sellruleName in sellrules) {
-                            dayResult[sellruleName] = false;
-                        }
+                var customRulesScriptReady = yield myFunction(talib, co, closes, highs, lows, opens, volumes, turnovers, dates, quotelength, buyrules, sellrules);
 
-                        for (var buyruleName in buyrules) {
-                            if (holdprice < 0 && buyrules[buyruleName](idx)) {
-                                holdprice = closes[idx];
-                                dayResult.holdprice = closes[idx];
-                                dayResult[buyruleName] = true;
-                            }
-                            else if (buyrules[buyruleName](idx)) {
-                                dayResult[buyruleName] = true;
-                            }
-                        };
-                        for (var sellruleName in sellrules) {
-                            if (holdprice > 0 && sellrules[sellruleName](idx)) {
-                                dayResult.profit = closes[idx] - holdprice;
-                                dayResult[sellruleName] = true;
-                                holdprice = -1;
-                                break;
-                            }
-                        };
-
-                        backtestResult.push(dayResult);
-                        dayResult = null;
+                var idx = 0;
+                for (idx; idx < quotelength - 1; idx++) {
+                    var dayResult = {};
+                    dayResult.date = moment(dates[idx].toISOString()).tz("Asia/Hong_Kong").format();
+                    dayResult.close = closes[idx];
+                    dayResult.high = highs[idx];
+                    dayResult.low = lows[idx];
+                    dayResult.open = opens[idx];
+                    dayResult.volume = volumes[idx];
+                    dayResult.turnover = turnovers[idx];
+                    dayResult.holdprice = holdprice;
+                    dayResult.profit = 0;
+                    for (var buyruleName in buyrules) {
+                        dayResult[buyruleName] = false;
                     }
-                    //end
+                    for (var sellruleName in sellrules) {
+                        dayResult[sellruleName] = false;
+                    }
 
-                    return backtestResult;
-                })
-                .then(function(backtestResult) {
+                    for (var buyruleName in buyrules) {
+                        if (holdprice < 0 && buyrules[buyruleName](idx)) {
+                            holdprice = closes[idx];
+                            dayResult.holdprice = closes[idx];
+                            dayResult[buyruleName] = true;
+                        }
+                        else if (buyrules[buyruleName](idx)) {
+                            dayResult[buyruleName] = true;
+                        }
+                    }
+                    ;
+                    for (var sellruleName in sellrules) {
+                        if (holdprice > 0 && sellrules[sellruleName](idx)) {
+                            dayResult.profit = closes[idx] - holdprice;
+                            dayResult[sellruleName] = true;
+                            holdprice = -1;
+                            break;
+                        }
+                    }
+                    ;
+
+                    backtestResult.push(dayResult);
+                    dayResult = null;
+                }
+                //end
+
+                return backtestResult;
+            })
+                .then(function (backtestResult) {
                     callback(null, backtestResult);
                 })
-                .catch(function(err, result) {
+                .catch(function (err, result) {
                     console.log('err: ' + err + ', result: ' + result);
                     callback(err, result);
                 });
 
         }
     }
-};
+}
+;
 
 module.exports = BacktestRunner;

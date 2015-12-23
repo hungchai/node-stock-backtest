@@ -10,7 +10,7 @@
                     inReal: closes,
                     optInTimePeriod: 3
                 });
-                console.log(ROCP["outReal"].length);
+                //console.log(ROCP["outReal"].length);
 
                 var WILLR_9 = yield talib.exec({
                     name: "WILLR",
@@ -23,7 +23,7 @@
                     inReal: closes,
                     optInTimePeriod: 9
                 });
-                console.log(WILLR_9["outReal"].length);
+                //console.log(WILLR_9["outReal"].length);
 
                 var RSI_9 = yield talib.exec({
                     name: "RSI",
@@ -36,7 +36,7 @@
                     inReal: closes,
                     optInTimePeriod: 9
                 });
-                console.log(RSI_9["outReal"].length);
+                //console.log(RSI_9["outReal"].length);
 
                 var MACD_3_50_10 = yield talib.exec({
                     name: "MACD",
@@ -47,7 +47,7 @@
                     optInSlowPeriod: 50,
                     optInSignalPeriod: 10
                 });
-                console.log(MACD_3_50_10["outMACDHist"].length);
+                //console.log(MACD_3_50_10["outMACDHist"].length);
 
 
                 buyrules["buy_3_MACD_outMACDSignal_UP"] = function(idx) {
