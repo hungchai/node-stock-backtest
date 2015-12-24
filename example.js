@@ -25,11 +25,23 @@ mongoose.connect(mongoURI)
 var mongoSchema = require('./Schema');
 var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
+var symbol = '00700:HK';
+var rulesJsPath = 'customRules.js';
+
+if (process.argv[2] != null)
+{
+    symbol = process.argv[2] ;
+    console.log(symbol);
+}
+if (process.argv[3] != null)
+{
+    rulesJsPath = process.argv[3] ;
+    console.log(rulesJsPath);
+}
 mongoose.connection.on("open", function (err) {
     co(function*() {
-        var symbol = '00700:HK';
         let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
-        let customRulesScript = yield coFs.readFile('customRules.js', 'utf8');
+        let customRulesScript = yield coFs.readFile(rulesJsPath, 'utf8');
         var bt = new BacktestResult(stockQuotesArray, customRulesScript);
         let backtestResult = yield bt.run();
         return backtestResult;
@@ -45,3 +57,6 @@ mongoose.connection.on("open", function (err) {
         });
 
 });
+
+
+//module.exports = node-stock-backtest
