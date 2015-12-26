@@ -63,18 +63,18 @@ class BacktestRunner {
                     }
 
                     for (var buyruleName in buyrules) {
-                        if (holdprice < 0 && buyrules[buyruleName](idx)) {
+                        if (holdprice < 0 && buyrules[buyruleName](idx, holdprice)) {
                             holdprice = closes[idx];
                             dayResult.holdprice = closes[idx];
                             dayResult[buyruleName] = true;
                         }
-                        else if (buyrules[buyruleName](idx)) {
+                        else if (buyrules[buyruleName](idx, holdprice)) {
                             dayResult[buyruleName] = true;
                         }
                     }
                     ;
                     for (var sellruleName in sellrules) {
-                        if (holdprice > 0 && sellrules[sellruleName](idx)) {
+                        if (holdprice > 0 && sellrules[sellruleName](idx, holdprice)) {
                             dayResult.profit = closes[idx] - holdprice;
                             dayResult[sellruleName] = true;
                             holdprice = -1;

@@ -48,7 +48,7 @@ mongoose.connection.on("open", function (err) {
     }).
         then(function (backtestResult) {
             var xlsResult = json2xls(backtestResult);
-            fs.writeFileSync('./backtestResult.xlsx', xlsResult, 'binary');
+            fs.writeFileSync('./backtestResult_'+symbol+'_'+rulesJsPath+'.xlsx', xlsResult, 'binary');
             process.exit(0);
         }).catch(function (err, result) {
             console.log('err: ' + err + ', result: ' + result);

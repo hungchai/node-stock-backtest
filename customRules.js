@@ -50,9 +50,9 @@
                 //console.log(MACD_3_50_10["outMACDHist"].length);
 
 
-                buyrules["buy_3_MACD_outMACDSignal_UP"] = function(idx) {
-                    if (MACD_3_50_10["outMACDHist"][idx] != null && MACD_3_50_10["outMACDHist"][idx - 5] != null) {
-                        if (MACD_3_50_10["outMACDHist"][idx] >= 0 && MACD_3_50_10["outMACDHist"][idx - 1] < 0 && MACD_3_50_10["outMACDSignal"][idx] < 0 && MACD_3_50_10["outMACDSignal"][idx - 5] < MACD_3_50_10["outMACDSignal"][idx])
+                buyrules["buy_WILLR_9_-70"] = function(idx, holdprice) {
+                    if (WILLR_9["outReal"][idx] != null) {
+                        if (WILLR_9["outReal"][idx] <= -70)
                             return true;
                         else
                             return false;
@@ -61,14 +61,17 @@
                         return false;
                     }
                 };
-                sellrules["sell_macd"] = function(idx) {
-                    if (MACD_3_50_10["outMACDHist"][idx] != null) {
-                        if (MACD_3_50_10["outMACDHist"][idx] < 0 && MACD_3_50_10["outMACDHist"][idx - 1] >= 0)
-                            return true;
-                        else
-                            return false;
+                sellrules["win_4%"] = function(idx, holdprice) {
+                    if ((closes[idx] - holdprice)/holdprice >= 0.03) {
+
+                        return true;
                     }
-                    else {
+                    else if
+                    ((closes[idx] - holdprice)/holdprice <= -0.04) {
+
+                        return true;
+                    }else
+                    {
                         return false;
                     }
                 };
