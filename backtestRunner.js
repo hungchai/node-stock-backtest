@@ -27,7 +27,8 @@ class BacktestRunner {
         var quotelength = closes.length;
         var buyrules = [];
         var sellrules = [];
-
+        var customHeaders = [];
+        
         let backtestResult = [];
 
         let customRulesScript = this.customRulesScript;
@@ -35,13 +36,13 @@ class BacktestRunner {
             co(function*() {
                 //importance
                 //eval(customRulesScript);
-                var myFunction = new Function("talib", "co", "closes", "highs", "lows", "opens", "volumes", "turnovers", "dates", "quotelength", "buyrules", "sellrules", 'return function(callback) {co(function*() {'
+                var myFunction = new Function("talib", "co", "closes", "highs", "lows", "opens", "volumes", "turnovers", "dates", "quotelength", "buyrules", "sellrules", "customHeaders",'return function(callback) {co(function*() {'
                     + customRulesScript + ' return "1"})'
                     + '.then(function(val) {callback(null, val)})'
                     + '.catch(function(err, result) {console.log("err: " + err + ", result: " + result);callback(err, result);});}');
                 //importance
 
-                var customRulesScriptReady = yield myFunction(talib, co, closes, highs, lows, opens, volumes, turnovers, dates, quotelength, buyrules, sellrules);
+                var customRulesScriptReady = yield myFunction(talib, co, closes, highs, lows, opens, volumes, turnovers, dates, quotelength, buyrules, sellrules, customHeaders);
 
                 var idx = 0;
                 for (idx; idx < quotelength - 1; idx++) {
@@ -61,11 +62,14 @@ class BacktestRunner {
                     for (var sellruleName in sellrules) {
                         dayResult[sellruleName] = false;
                     }
-
+                    for (var customHeader in customHeaders) {
+                        dayResult[customHeader] = customHeaders[customHeader](idx);
+                    }
+                    
                     for (var buyruleName in buyrules) {
                         if (holdprice < 0 && buyrules[buyruleName](idx, holdprice)) {
-                            holdprice = closes[idx];
-                            dayResult.holdprice = closes[idx];
+                            holdprice = lows[idx]
+                            dayResult.holdprice = holdprice;
                             dayResult[buyruleName] = true;
                         }
                         else if (buyrules[buyruleName](idx, holdprice)) {
@@ -75,7 +79,7 @@ class BacktestRunner {
                     ;
                     for (var sellruleName in sellrules) {
                         if (holdprice > 0 && sellrules[sellruleName](idx, holdprice)) {
-                            dayResult.profit = closes[idx] - holdprice;
+                            dayResult.profit = (highs[idx]+lows[idx])/2 - holdprice;
                             dayResult[sellruleName] = true;
                             holdprice = -1;
                             break;

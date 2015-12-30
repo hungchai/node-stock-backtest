@@ -25,8 +25,8 @@ mongoose.connect(mongoURI)
 var mongoSchema = require('./Schema');
 var StockQuotesArrayModel = mongoose.model("StockQuotesArray");
 
-var symbol = '00700:HK';
-var rulesJsPath = 'customRules.js';
+var symbol = '00005:HK';
+var rulesJsPath = 'customRules_EMA.js';
 
 if (process.argv[2] != null)
 {
