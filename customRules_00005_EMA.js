@@ -1,40 +1,54 @@
-                var EMA_5 = yield talib.exec({
+                var EMA_Fast = yield talib.exec({
                     name: 'EMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 5
+                    optInTimePeriod:7
                 });
-                var EMA_10 = yield talib.exec({
+                var EMA_Middle = yield talib.exec({
                     name: 'EMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 10
+                    optInTimePeriod: 15
                 });
-                var EMA_20 = yield talib.exec({
+                var EMA_Slow = yield talib.exec({
                     name: 'EMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 20
+                    optInTimePeriod: 30
                 });
                 
-                customHeaders["EMA_5"] = function(idx) {
-                    return EMA_5["outReal"][idx];
+                 var RSI_9 = yield talib.exec({
+                    name: "RSI",
+                    startIdx: 0,
+                    endIdx: quotelength - 1,
+                    high: highs,
+                    low: lows,
+                    close: closes,
+                    open: opens,
+                    inReal: closes,
+                    optInTimePeriod: 9
+                });
+               customHeaders["RSI_9"] = function(idx) {
+                    return RSI_9["outReal"][idx];
+                };
+                customHeaders["EMA_fast"] = function(idx) {
+                    return EMA_Fast["outReal"][idx];
                 };
                 
-                customHeaders["EMA_10"] = function(idx) {
-                    return EMA_10["outReal"][idx];
+                customHeaders["EMA_Middle"] = function(idx) {
+                    return EMA_Middle["outReal"][idx];
                 };
-                customHeaders["EMA_20"] = function(idx) {
-                    return EMA_20["outReal"][idx];
+                customHeaders["EMA_Slow"] = function(idx) {
+                    return EMA_Slow["outReal"][idx];
                 };
 
-                buyrules["buy_EMA_5>EMA_10>EMA_20"] = function(idx, holdprice) {
-                   if (EMA_10["outReal"][idx-1] != null)
+                buyrules["buy_EMA_fast>EMA_Middle"] = function(idx, holdprice) {
+                   if (RSI_9["outReal"][idx] != null)
                    {
-                       if (EMA_5["outReal"][idx] > EMA_10["outReal"][idx])
+                       if (RSI_9["outReal"][idx]<60 && EMA_Fast["outReal"][idx] > EMA_Middle["outReal"][idx])
                        {
                            return true;
                        }else
@@ -55,11 +69,20 @@
                         return false;
                     }
                 };
-                sellrules["EMA_5<EMA_10"] = function(idx, holdprice) {
-                    if (EMA_10["outReal"][idx] > EMA_5["outReal"][idx]) {
+                 sellrules["loss_1%"] = function(idx, holdprice) {
+                    if (((highs[idx] - holdprice) / holdprice) <= -0.01) {
                         return true;
                     }
                     else {
                         return false;
                     }
                 };
+                // sellrules["sell EMA_Middle<EMA_Slow"] = function(idx, holdprice) {
+                //     if (EMA_Middle["outReal"][idx-1] >= EMA_Slow["outReal"][idx-1] && EMA_Middle["outReal"][idx] < EMA_Slow["outReal"][idx]) {
+                //         return true;
+                //     }
+                //     else {
+                //         return false;
+                //     }
+                // };
+              
