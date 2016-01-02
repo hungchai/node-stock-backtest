@@ -10,7 +10,7 @@ class BacktestRunner {
     constructor(stockQuotesArray, customRulesScript) {
         this.stockQuotesArray = stockQuotesArray;
         this.customRulesScript = customRulesScript;
-        console.log("TALib Version: " + talib.version);
+        //console.log("TALib Version: " + talib.version);
     }
 
 
@@ -37,7 +37,7 @@ class BacktestRunner {
                 //importance
                 //eval(customRulesScript);
                 var myFunction = new Function("talib", "co", "closes", "highs", "lows", "opens", "volumes", "turnovers", "dates", "quotelength", "buyrules", "sellrules", "customHeaders",'return function(callback) {co(function*() {'
-                    + customRulesScript + ' return "1"})'
+                    + customRulesScript + ' ;return "1"})'
                     + '.then(function(val) {callback(null, val)})'
                     + '.catch(function(err, result) {console.log("err: " + err + ", result: " + result);callback(err, result);});}');
                 //importance
@@ -79,7 +79,7 @@ class BacktestRunner {
                     ;
                     for (var sellruleName in sellrules) {
                         if (holdprice > 0 && sellrules[sellruleName](idx, holdprice)) {
-                            dayResult.profit = (highs[idx]+lows[idx])/2 - holdprice;
+                            dayResult.profit = highs[idx] - holdprice;
                             dayResult[sellruleName] = true;
                             holdprice = -1;
                             break;
