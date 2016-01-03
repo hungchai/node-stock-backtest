@@ -47,7 +47,7 @@ class BacktestRunner {
                 var idx = 0;
                 for (idx; idx < quotelength - 1; idx++) {
                     var dayResult = {};
-                    dayResult.date = moment(dates[idx].toISOString()).tz("Asia/Hong_Kong").format();
+                    dayResult.date = moment(dates[idx].toISOString()).tz("Asia/Hong_Kong").format('YYYY-MM-DD');
                     dayResult.close = closes[idx];
                     dayResult.high = highs[idx];
                     dayResult.low = lows[idx];

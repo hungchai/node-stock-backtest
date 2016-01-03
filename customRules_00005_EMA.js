@@ -3,23 +3,31 @@
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod:5
+                    optInTimePeriod:10
                 });
                 var EMA_Middle = yield talib.exec({
                     name: 'SMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 10
+                    optInTimePeriod: 30
                 });
                 var EMA_Slow = yield talib.exec({
                     name: 'SMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 20
+                    optInTimePeriod: 52
                 });
-                
+                var MACD = yield talib.exec({
+                    name: "MACD",
+                    startIdx: 0,
+                    endIdx: quotelength - 1,
+                    inReal: closes,
+                    optInFastPeriod: 12,
+                    optInSlowPeriod: 26,
+                    optInSignalPeriod: 9}
+                );
                  var RSI_9 = yield talib.exec({
                     name: "RSI",
                     startIdx: 0,
@@ -45,10 +53,12 @@
                     return EMA_Slow["outReal"][idx];
                 };
 
-                buyrules["buy_EMA_fast>EMA_Slow"] = function(idx, holdprice) {
+                buyrules["buy_MACD>MACD"] = function(idx, holdprice) {
                    if (EMA_Fast["outReal"][idx] != null)
                    {
                        if (
+                           EMA_Slow["outReal"][idx-2] < EMA_Slow["outReal"][idx-1] &&
+                       EMA_Slow["outReal"][idx-1] < EMA_Slow["outReal"][idx] &&
                        EMA_Fast["outReal"][idx] > EMA_Middle["outReal"][idx] && 
                        EMA_Fast["outReal"][idx-1]  < EMA_Slow["outReal"][idx-1] && 
                        EMA_Fast["outReal"][idx]  >= EMA_Slow["outReal"][idx] )
