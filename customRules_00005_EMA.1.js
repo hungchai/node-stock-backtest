@@ -3,21 +3,21 @@
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod:5
+                    optInTimePeriod:10
                 });
                 var EMA_Middle = yield talib.exec({
                     name: 'SMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 10
+                    optInTimePeriod: 30
                 });
                 var EMA_Slow = yield talib.exec({
                     name: 'SMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 20
+                    optInTimePeriod: 60
                 });
                 
                  var RSI_9 = yield talib.exec({

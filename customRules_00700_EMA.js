@@ -1,23 +1,23 @@
                 var EMA_Fast = yield talib.exec({
-                    name: 'SMA',
+                    name: 'EMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod:5
+                    optInTimePeriod:7
                 });
                 var EMA_Middle = yield talib.exec({
-                    name: 'SMA',
+                    name: 'EMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 10
+                    optInTimePeriod: 15
                 });
                 var EMA_Slow = yield talib.exec({
-                    name: 'SMA',
+                    name: 'EMA',
                     startIdx: 0,
                     endIdx: quotelength - 1,
                     inReal: closes,
-                    optInTimePeriod: 20
+                    optInTimePeriod: 30
                 });
                 
                  var RSI_9 = yield talib.exec({
@@ -45,13 +45,10 @@
                     return EMA_Slow["outReal"][idx];
                 };
 
-                buyrules["buy_EMA_fast>EMA_Slow"] = function(idx, holdprice) {
-                   if (EMA_Fast["outReal"][idx] != null)
+                buyrules["buy_EMA_fast>EMA_Middle"] = function(idx, holdprice) {
+                   if (RSI_9["outReal"][idx] != null)
                    {
-                       if (
-                       EMA_Fast["outReal"][idx] > EMA_Middle["outReal"][idx] && 
-                       EMA_Fast["outReal"][idx-1]  < EMA_Slow["outReal"][idx-1] && 
-                       EMA_Fast["outReal"][idx]  >= EMA_Slow["outReal"][idx] )
+                       if (RSI_9["outReal"][idx]<60 && EMA_Fast["outReal"][idx] > EMA_Middle["outReal"][idx])
                        {
                            return true;
                        }else
@@ -64,30 +61,28 @@
                    }
                 };
                 
-                sellrules["win_3%"] = function(idx, holdprice) {
-                    if (((highs[idx] - holdprice) / holdprice) >= 0.03) {
+                sellrules["win_2%"] = function(idx, holdprice) {
+                    if (((highs[idx] - holdprice) / holdprice) >= 0.02) {
                         return true;
                     }
                     else {
                         return false;
                     }
                 };
-                 sellrules["loss_2%"] = function(idx, holdprice) {
-                    if (((highs[idx] - holdprice) / holdprice) <= -0.02) {
+                 sellrules["loss_1%"] = function(idx, holdprice) {
+                    if (((highs[idx] - holdprice) / holdprice) <= -0.01) {
                         return true;
                     }
                     else {
                         return false;
                     }
                 };
-                sellrules["sell EMA_Middle<EMA_Slow"] = function(idx, holdprice) {
-                    if (EMA_Fast["outReal"][idx] < EMA_Middle["outReal"][idx] && 
-                       EMA_Middle["outReal"][idx-1] >= EMA_Slow["outReal"][idx-1] && 
-                       EMA_Middle["outReal"][idx]< EMA_Slow["outReal"][idx] ) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                };
+                // sellrules["sell EMA_Middle<EMA_Slow"] = function(idx, holdprice) {
+                //     if (EMA_Middle["outReal"][idx-1] >= EMA_Slow["outReal"][idx-1] && EMA_Middle["outReal"][idx] < EMA_Slow["outReal"][idx]) {
+                //         return true;
+                //     }
+                //     else {
+                //         return false;
+                //     }
+                // };
               
