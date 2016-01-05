@@ -20,7 +20,7 @@
     "co": "^4.6.0",
     "co-fs": "^1.2.0",
     "co-parallel": "^1.0.0",
-    "co-talib": ">1.0.0",
+    "co-talib": "^1.0.0",
     "json2xls": "0.0.*",
     "moment": "^2.10.6",
     "moment-timezone": "^0.4.1",
