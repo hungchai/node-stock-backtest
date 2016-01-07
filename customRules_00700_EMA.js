@@ -77,12 +77,3 @@
                         return false;
                     }
                 };
-                // sellrules["sell EMA_Middle<EMA_Slow"] = function(idx, holdprice) {
-                //     if (EMA_Middle["outReal"][idx-1] >= EMA_Slow["outReal"][idx-1] && EMA_Middle["outReal"][idx] < EMA_Slow["outReal"][idx]) {
-                //         return true;
-                //     }
-                //     else {
-                //         return false;
-                //     }
-                // };
-              
