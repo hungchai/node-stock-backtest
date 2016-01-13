@@ -10,7 +10,7 @@ var _ = require("underscore");
 var json2xls = require('json2xls');
 var coFs = require('co-fs');
 var fs = require('fs');
-var BacktestResult = require('./backtestRunner');
+var BacktestRunner = require('./backtestRunner');
 
 try {
     var mongoURI = config.mongoDbConn;
@@ -42,7 +42,7 @@ mongoose.connection.on("open", function (err) {
     co(function*() {
         let stockQuotesArray = yield StockQuotesArrayModel.findBySymbol(symbol);
         let customRulesScript = yield coFs.readFile(rulesJsPath, 'utf8');
-        var bt = new BacktestResult(stockQuotesArray, customRulesScript);
+        var bt = new BacktestRunner(stockQuotesArray, customRulesScript);
         let backtestResult = yield bt.run();
         return backtestResult;
     }).
