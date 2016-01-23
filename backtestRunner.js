@@ -45,7 +45,7 @@ class BacktestRunner {
                 var customRulesScriptReady = yield myFunction(talib, co, closes, highs, lows, opens, volumes, turnovers, dates, quotelength, buyrules, sellrules, customHeaders);
 
                 var idx = 0;
-                for (idx; idx < quotelength - 1; idx++) {
+                for (idx; idx < quotelength; idx++) {
                     var dayResult = {};
                     dayResult.date = moment(dates[idx].toISOString()).tz("Asia/Hong_Kong").format('YYYY-MM-DD');
                     dayResult.close = closes[idx];
