@@ -48,7 +48,7 @@
                 buyrules["buy_EMA_fast>EMA_Middle"] = function(idx, holdprice) {
                    if (RSI_9["outReal"][idx] != null)
                    {
-                       if (RSI_9["outReal"][idx]<60 && EMA_Fast["outReal"][idx] > EMA_Middle["outReal"][idx])
+                       if (RSI_9["outReal"][idx]<60 && EMA_Fast["outReal"][idx] > EMA_Middle["outReal"][idx] && EMA_Fast["outReal"][idx-1] < EMA_Middle["outReal"][idx-1])
                        {
                            return true;
                        }else
